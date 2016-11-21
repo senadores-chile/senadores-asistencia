@@ -15,13 +15,25 @@ const URL_ASISTENCIA_COMISIONES = 'http://www.senado.cl/appsenado/index.php?mo=c
 // Get attendance for a single senator to regular room sessions
 // (obj, any) -> obj
 function getAsistenciaSala (senador, periodo) {
-  
+  const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo)
 }
 
 // Get attendance for a single senator to all of his commissions
 // (obj, any) -> arr
 function getAsistenciaComisiones (senador, periodo) {
-  
+
+}
+
+// Convert a period into a period id for web scrapping
+// (obj|num) -> num
+function getPeriodoSala (periodo) {
+
+}
+
+// Convert a period into a period id for web scrapping
+// (obj|num) -> num
+function getPeriodoComisiones (periodo) {
+
 }
 
 // Get attendance details for senators
@@ -38,18 +50,18 @@ module.exports = function asistencia (query, options) {
   senadoresBase.map(senador => {
     let comisiones = []
     let sala = {}
-    
+
     switch (options.tipo) {
       case 'todas':
-        sala = getAsistenciaSala(senador, options.periodo)
-        comisiones = getAsistenciaComisiones(senador, options.periodo)
-        break;
+        sala = getAsistenciaSala(senador, getPeriodoSala(options.periodo))
+        comisiones = getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
+        break
       case 'sala':
-        sala = getAsistenciaSala(senador, options.periodo)
-        break;
+        sala = getAsistenciaSala(senador, getPeriodoSala(options.periodo))
+        break
       case 'comision':
-        comisiones = getAsistenciaComisiones(senador, options.periodo)
-        break;
+        comisiones = getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
+        break
     }
     return Object.assign({}, { sala }, { comisiones })
   })
