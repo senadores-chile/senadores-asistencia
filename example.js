@@ -1,3 +1,3 @@
 const asistencia = require('./')
 
-asistencia({ partido: 'R.N.' }, { tipo: 'sala' })
+asistencia('Fulvio', { tipo: 'sala' })

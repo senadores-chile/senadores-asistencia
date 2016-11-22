@@ -2,6 +2,7 @@
 
 const senadores = require('senadores-base')
 const scraperjs = require('scraperjs')
+const pMap = require('p-map')
 
 // legiid -> periodo
 const URL_ASISTENCIA_SALA = 'http://www.senado.cl/appsenado/index.php?mo=sesionessala&ac=asistenciaSenadores&camara=S&legiini=361&legiid=:periodo:'
@@ -114,7 +115,7 @@ const periods = [
 function getAsistenciaSala (senador, periodo) {
   const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo.id)
   // Get general data of attendance
-  scraperjs.StaticScraper.create()
+  return scraperjs.StaticScraper.create()
     .get(url)
     .scrape($ => {
       let total = $('#main h2').text().match(/(\d*)/g)
@@ -133,10 +134,12 @@ function getAsistenciaSala (senador, periodo) {
         inasistencias: {
           total: total - asistencia,
           justificadas: inasistenciasJustificadas,
-          injustificadas: total - inasistenciasJustificadas
+          injustificadas: ((total - asistencia) - inasistenciasJustificadas) > 0
+                          ? (total - asistencia) - inasistenciasJustificadas
+                          : 0
         }
       }
-    }).then(s => console.log(s))
+    })
 }
 
 // Get attendance for a single senator to all of his commissions
@@ -186,7 +189,7 @@ module.exports = function asistencia (query, options) {
   options = Object.assign(defaultOptions, options)
 
   let senadoresBase = senadores(query)
-  senadoresBase = senadoresBase.map(senador => {
+  const mapper = senador => {
     let comisiones = []
     let sala = {}
 
@@ -202,9 +205,11 @@ module.exports = function asistencia (query, options) {
         comisiones = getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
         break
     }
-    return Object.assign({}, { sala }, { comisiones })
-  })
-  return options.cantidadSenadores && options.cantidadSenadores > -1
+    // return Object.assign({}, { sala }, { comisiones })
+    return getAsistenciaSala(senador, getPeriodoSala(options.periodo))
+  }
+  senadoresBase = options.cantidadSenadores && options.cantidadSenadores > -1
           ? senadoresBase.splice(options.cantidadSenadores - 1)
           : senadoresBase
+  return pMap(senadoresBase, mapper).then(result => console.log(result))
 }
