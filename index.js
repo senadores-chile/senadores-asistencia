@@ -37,5 +37,5 @@ module.exports = function asistencia (query, options) {
   senadoresBase = options.cantidadSenadores && options.cantidadSenadores > -1
           ? senadoresBase.splice(options.cantidadSenadores - 1)
           : senadoresBase
-  return pMap(senadoresBase, mapper).then(result => console.log(result))
+  return pMap(senadoresBase, mapper).then(result => {})
 }

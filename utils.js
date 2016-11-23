@@ -1,6 +1,6 @@
 'use strict'
 
-const { periods, URL_ASISTENCIA_SALA } = require('./consts')
+const { periods, URL_ASISTENCIA_SALA, URL_ASISTENCIA_SALA_DETALLE } = require('./consts')
 const scraperjs = require('scraperjs')
 
 // Convert a period into a period id for web scrapping
@@ -27,8 +27,59 @@ function getPeriodoSala (periodo) {
   }
 }
 
+// Convert a chilean month string into a month number to be used in Date constructor
+// (str) -> num
+function clMonthToMonth (clMonth) {
+  const months = {
+    Enero: 0,
+    Febrero: 1,
+    Marzo: 2,
+    Abril: 3,
+    Mayo: 4,
+    Junio: 5,
+    Julio: 6,
+    Agosto: 7,
+    Septiembre: 8,
+    Octubre: 9,
+    Noviembre: 10,
+    Diciembre: 11
+  }
+  return months[clMonth]
+}
+
+// Get detailed attendance info
+// (obj, obj, str) => obj
+function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
+  let url = URL_ASISTENCIA_SALA_DETALLE.replace(/:periodo:/, periodo.id)
+  url = url.replace(/:senador-id:/, senador.id)
+
+  return scraperjs.StaticScraper.create()
+    .get(url)
+    .scrape($ => {
+      const detalle = $('table:last-child tr:not(:first-child)').map(function () {
+        const str = $(this).find('td:last-child a').text()
+
+        const data = str.match(/(\d*) (\w*), [\s\S]* (\d*) de (\w*) de (\d*)/)
+        const session = data[1]
+        const tipo = data[2]
+                      // año, mes, día
+        const fecha = new Date(parseInt(data[5]), clMonthToMonth(data[4]), parseInt(data[3]))
+        const asiste = !!$(this).find('td:first-child').has('img')
+        // console.log(session, tipo, fecha, asiste)
+        return {
+          session,
+          tipo,
+          fecha,
+          asiste
+        }
+      })
+      console.log(detalle)
+      return Object.assign(asistenciaGeneral, { detalle })
+    })
+}
+
 // Get attendance for a single senator to regular room sessions
-// (obj, any) -> obj
+// (obj, str) -> obj
 function getAsistenciaSala (senador, periodo) {
   const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo.id)
   // Get general data of attendance
@@ -56,6 +107,8 @@ function getAsistenciaSala (senador, periodo) {
                           : 0
         }
       }
+    }).then(result => {
+      return getDetalleAsistenciaSala(result, senador, periodo)
     })
 }
 
