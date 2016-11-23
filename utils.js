@@ -2,10 +2,13 @@
 
 const { periods, URL_ASISTENCIA_SALA, URL_ASISTENCIA_SALA_DETALLE } = require('./consts')
 const scraperjs = require('scraperjs')
+const assert = require('assert')
 
 // Convert a period into a period id for web scrapping
 // (date|num) -> obj
 function getPeriodoSala (periodo) {
+  assert.ok(typeof periodo === 'number' || periodo instanceof Date, '[senadores-asistencia]: El periodo ingresado debe ser un número o una fecha.')
+
   let _period = {}
   if (typeof periodo === 'number') {
     _period = periods.filter(period => period.id === periodo)
@@ -15,6 +18,7 @@ function getPeriodoSala (periodo) {
     _period = periods.filter(period => {
       return period.desde.year <= periodo && periodo <= period.hasta.year
     })[0]
+    assert.ok(_period, '[senadores-asistencia]: Periodo de busqueda no encontrado')
     console.warn('[senadores-asistencia]: Solo se puede consultar por periodo legislativo. Si para un mismo año existe más de un periodo legislativo, solo se obtendran los resultados del primer periodo encontrado, por lo que jamas se obtendran los periodos posteriores en caso de existir. Prefiera busquedas por fecha o id de legislatura.')
     return _period
   }
@@ -23,6 +27,7 @@ function getPeriodoSala (periodo) {
     _period = periods.filter(period => {
       return period.desde.getTime() <= periodo.getTime() && periodo.getTime() <= period.hasta.getTime()
     })[0]
+    assert.ok(_period, '[senadores-asistencia]: Periodo de busqueda no encontrado')
     return _period
   }
 }
@@ -30,6 +35,7 @@ function getPeriodoSala (periodo) {
 // Convert a chilean month string into a month number to be used in Date constructor
 // (str) -> num
 function clMonthToMonth (clMonth) {
+  assert.equal(typeof clMonth, 'string', `[senadores-asistencia]: No se puede convertir el mes ${clMonth}`)
   const months = {
     Enero: 0,
     Febrero: 1,
@@ -44,12 +50,17 @@ function clMonthToMonth (clMonth) {
     Noviembre: 10,
     Diciembre: 11
   }
+  assert.ok(months[clMonth], `[senadores-asistencia]: No se puede convertir el mes ${clMonth}`)
   return months[clMonth]
 }
 
 // Get detailed attendance info
-// (obj, obj, str) => obj
+// (obj, obj, obj) => obj
 function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
+  assert.equal(typeof asistenciaGeneral, 'object', '[senadores-asistencia]: La asistencia general ingresada debe ser un objeto.')
+  assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
+  assert.equal(typeof periodo, 'object', '[senadores-asistencia]: El periodo general ingresada debe ser un objeto.')
+  
   let url = URL_ASISTENCIA_SALA_DETALLE.replace(/:periodo:/, periodo.id)
   url = url.replace(/:senador-id:/, senador.id)
 
@@ -73,14 +84,16 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
           asiste
         }
       }).get()
-      // console.log(detalle)
       return Object.assign(asistenciaGeneral, { detalle })
     })
 }
 
 // Get attendance for a single senator to regular room sessions
-// (obj, str) -> obj
+// (obj, obj) -> obj
 function getAsistenciaSala (senador, periodo) {
+  assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
+  assert.equal(typeof periodo, 'object', '[senadores-asistencia]: El periodo general ingresada debe ser un objeto.')
+
   const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo.id)
   // Get general data of attendance
   return scraperjs.StaticScraper.create()
@@ -121,13 +134,15 @@ function getAsistenciaComisiones (senador, periodo) {
 // Convert a period into a period id for web scrapping
 // (obj|num) -> num
 function getPeriodoComisiones (periodo) {
+  assert.ok(typeof periodo === 'number' || periodo instanceof Date, '[senadores-asistencia]: El periodo ingresado debe ser un número o una fecha.')
+
   if (typeof periodo === 'number') {
-    // add assert here
+    assert.ok(periodo <= new Date().getFullYear(), '[senadores-asistencia]: No se puede consultar por un periodo en el futuro')
     return periodo
   }
   if (periodo instanceof Date) {
-    // add assert here
-    return periodo.getYear()
+    assert.ok(periodo.getFullYear() <= new Date().getFullYear(), '[senadores-asistencia]: No se puede consultar por un periodo en el futuro')
+    return periodo.getFullYear()
   }
 }
 
