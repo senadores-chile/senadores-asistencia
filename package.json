@@ -17,6 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "assert": "^1.4.1",
+    "p-all": "^1.0.0",
     "p-map": "^1.1.0",
     "scraperjs": "^1.2.0",
     "senadores-base": "^1.1.0"

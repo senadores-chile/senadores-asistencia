@@ -64,7 +64,7 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
         const tipo = data[2]
                       // año, mes, día
         const fecha = new Date(parseInt(data[5]), clMonthToMonth(data[4]), parseInt(data[3]))
-        const asiste = !!$(this).find('td:first-child').has('img')
+        const asiste = $(this).find('td:first-child').has('img').length > 0
         // console.log(session, tipo, fecha, asiste)
         return {
           session,

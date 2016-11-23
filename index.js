@@ -2,7 +2,8 @@
 
 const senadores = require('senadores-base')
 const pMap = require('p-map')
-const { getAsistenciaSala, getPeriodoSala } = require('./utils')
+const pAll = require('p-all')
+const { getAsistenciaSala, getPeriodoSala, getAsistenciaComisiones, getPeriodoComisiones } = require('./utils')
 
 // Get attendance details for senators
 // (any, obj) -> arr
@@ -16,23 +17,22 @@ module.exports = function asistencia (query, options) {
 
   let senadoresBase = senadores(query)
   const mapper = senador => {
-    /* let comisiones = []
-    let sala = {}
-
     switch (options.tipo) {
       case 'todas':
-        sala = getAsistenciaSala(senador, getPeriodoSala(options.periodo))
-        comisiones = getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
-        break
+        const actions = [
+          () => getAsistenciaSala(senador, getPeriodoSala(options.periodo)),
+          () => getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
+        ]
+        return pAll(actions).then(result => { 
+          return { sala: result[0], comisiones: result[1] }
+        })
       case 'sala':
-        sala = getAsistenciaSala(senador, getPeriodoSala(options.periodo))
-        break
+        return getAsistenciaSala(senador, getPeriodoSala(options.periodo))
       case 'comision':
-        comisiones = getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
-        break
-    } */
-    // return Object.assign({}, { sala }, { comisiones })
-    return getAsistenciaSala(senador, getPeriodoSala(options.periodo))
+        return getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
+      default:
+        throw new Error(`[senadores-asistencia]: Error - tipo de retorno '${options.tipo}' no conocido.`)
+    }
   }
   senadoresBase = options.cantidadSenadores && options.cantidadSenadores > -1
           ? senadoresBase.splice(options.cantidadSenadores - 1)
