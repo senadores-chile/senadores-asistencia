@@ -39,7 +39,7 @@ asistencia('Allamand')
         }
       ]
     },
-    comision: {
+    comisiones: {
       periodo: 2016,
       oficiales: [
         {

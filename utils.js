@@ -72,8 +72,8 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
           fecha,
           asiste
         }
-      })
-      console.log(detalle)
+      }).get()
+      // console.log(detalle)
       return Object.assign(asistenciaGeneral, { detalle })
     })
 }
