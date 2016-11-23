@@ -6,6 +6,7 @@ const consts = require('./consts')
 const periods = consts.periods
 const URL_ASISTENCIA_SALA = consts.URL_ASISTENCIA_SALA
 const URL_ASISTENCIA_SALA_DETALLE = consts.URL_ASISTENCIA_SALA_DETALLE
+const URL_ASISTENCIA_COMISIONES = consts.URL_ASISTENCIA_COMISIONES
 
 // Convert a period into a period id for web scrapping
 // (date|num) -> obj
@@ -129,9 +130,43 @@ function getAsistenciaSala (senador, periodo) {
 }
 
 // Get attendance for a single senator to all of his commissions
-// (obj, any) -> arr
+// (obj, num) -> arr
 function getAsistenciaComisiones (senador, periodo) {
+  assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
+  assert.equal(typeof periodo, 'number', '[senadores-asistencia]: El periodo general ingresada debe ser un número.')
 
+  let url = URL_ASISTENCIA_COMISIONES.replace(/:periodo:/, periodo)
+  url = url.replace(/:senador-id:/, senador.id)
+
+  return scraperjs.StaticScraper.create()
+    .get(url)
+    .scrape($ => {
+      const oficiales = $('table').first().find('tr:not(:first-child)').map(function () {
+        const nombreOficial = $(this).find('td:nth-child(1)').text().trim()
+        const total = parseInt($(this).find('td:nth-child(2)').text().trim())
+        const asiste = parseInt($(this).find('td:nth-child(3)').text().trim())
+        return {
+          nombre: nombreOficial,
+          total,
+          asiste
+        }
+      }).get()
+      const otras = $('table').last().find('tr:not(:first-child)').map(function () {
+        const nombreOtra = $(this).find('td:nth-child(1)').text().trim()
+        const reemplazante = parseInt($(this).find('td:nth-child(2)').text().trim())
+        const asistente = parseInt($(this).find('td:nth-child(3)').text().trim())
+        return {
+          nombre: nombreOtra,
+          reemplazante,
+          asistente
+        }
+      }).get()
+      return {
+        periodo,
+        oficiales,
+        otras
+      }
+    })
 }
 
 // Convert a period into a period id for web scrapping

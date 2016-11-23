@@ -1,4 +1,4 @@
 const asistencia = require('./')
 
-asistencia('Orpis', { tipo: 'sala' })
-    .then(result => { console.log(result[0]) })
+asistencia('Allamand')
+    .then(result => { console.log(result[0].sala, result[0].comisiones) })
