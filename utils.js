@@ -10,7 +10,7 @@ function getPeriodoSala (periodo) {
   if (typeof periodo === 'number') {
     _period = periods.filter(period => period.id === periodo)
     // search directly by period id
-    if (_period.length > 0) return _period
+    if (_period.length > 0) return _period[0]
     // search only by year
     _period = periods.filter(period => {
       return period.desde.year <= periodo && periodo <= period.hasta.year
@@ -121,7 +121,14 @@ function getAsistenciaComisiones (senador, periodo) {
 // Convert a period into a period id for web scrapping
 // (obj|num) -> num
 function getPeriodoComisiones (periodo) {
-
+  if (typeof periodo === 'number') {
+    // add assert here
+    return periodo
+  }
+  if (periodo instanceof Date) {
+    // add assert here
+    return periodo.getYear()
+  }
 }
 
 exports.getPeriodoSala = getPeriodoSala
