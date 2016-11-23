@@ -1,8 +1,11 @@
 'use strict'
 
-const { periods, URL_ASISTENCIA_SALA, URL_ASISTENCIA_SALA_DETALLE } = require('./consts')
 const scraperjs = require('scraperjs')
 const assert = require('assert')
+const consts = require('./consts')
+const periods = consts.periods
+const URL_ASISTENCIA_SALA = consts.URL_ASISTENCIA_SALA
+const URL_ASISTENCIA_SALA_DETALLE = consts.URL_ASISTENCIA_SALA_DETALLE
 
 // Convert a period into a period id for web scrapping
 // (date|num) -> obj
@@ -60,7 +63,7 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
   assert.equal(typeof asistenciaGeneral, 'object', '[senadores-asistencia]: La asistencia general ingresada debe ser un objeto.')
   assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
   assert.equal(typeof periodo, 'object', '[senadores-asistencia]: El periodo general ingresada debe ser un objeto.')
-  
+
   let url = URL_ASISTENCIA_SALA_DETALLE.replace(/:periodo:/, periodo.id)
   url = url.replace(/:senador-id:/, senador.id)
 

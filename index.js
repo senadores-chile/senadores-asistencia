@@ -3,7 +3,11 @@
 const senadores = require('senadores-base')
 const pMap = require('p-map')
 const pAll = require('p-all')
-const { getAsistenciaSala, getPeriodoSala, getAsistenciaComisiones, getPeriodoComisiones } = require('./utils')
+const utils = require('./utils')
+const getAsistenciaSala = utils.getAsistenciaSala
+const getPeriodoSala = utils.getPeriodoSala
+const getAsistenciaComisiones = utils.getAsistenciaComisiones
+const getPeriodoComisiones = utils.getPeriodoComisiones
 
 // Get attendance details for senators
 // (any, obj) -> arr
@@ -23,7 +27,7 @@ module.exports = function asistencia (query, options) {
           () => getAsistenciaSala(senador, getPeriodoSala(options.periodo)),
           () => getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
         ]
-        return pAll(actions).then(result => { 
+        return pAll(actions).then(result => {
           return { sala: result[0], comisiones: result[1] }
         })
       case 'sala':
