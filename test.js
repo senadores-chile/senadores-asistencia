@@ -32,8 +32,8 @@ test('custom options', async t => {
   // const resultByDate = await senadoresAsistencia('Allamand', { periodo: new Date(2014, 3, 12) })
 
   // test cantidadSenadores option
-  // const negativeSenators = await senadoresAsistencia('Allamand', { cantidadSenadores: -1 })
-  // const positiveSenators = await senadoresAsistencia('Allamand', { cantidadSenadores: 5 })
+  // const negativeSenators = await senadoresAsistencia({ partido: 'P.S.' }, { cantidadSenadores: -1 })
+  // const positiveSenators = await senadoresAsistencia({}, { cantidadSenadores: 5 })
 
   // test tipo option
   // const allResults = await senadoresAsistencia('Allamand', { tipo: 'todas' })

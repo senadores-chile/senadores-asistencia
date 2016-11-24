@@ -74,7 +74,7 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
       const detalle = $('table:last-child tr:not(:first-child)').map(function () {
         const str = $(this).find('td:last-child a').text()
         // console.log(str, periodo)
-        const data = str.match(/(\-{0,1}\d*) ([\s\S]*), [\s\S]* (\d*) de (\w*) de (\d*)/)
+        const data = str.match(/(-{0,1}\d*) ([\s\S]*), [\s\S]* (\d*) de (\w*) de (\d*)/)
         const session = data[1]
         const tipo = data[2]
                       // año, mes, día
