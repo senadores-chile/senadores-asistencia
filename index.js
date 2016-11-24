@@ -39,7 +39,7 @@ module.exports = function asistencia (query, options) {
     }
   }
   senadoresBase = options.cantidadSenadores && options.cantidadSenadores > -1
-          ? senadoresBase.splice(options.cantidadSenadores - 1)
+          ? senadoresBase.slice(0, options.cantidadSenadores)
           : senadoresBase
   return pMap(senadoresBase, mapper)
 }

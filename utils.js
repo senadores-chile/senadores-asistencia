@@ -15,7 +15,7 @@ function getPeriodoSala (periodo) {
 
   let _period = {}
   if (typeof periodo === 'number') {
-    _period = periods.filter(period => period.id === periodo)
+    _period = periods.filter(period => period.legislatura === periodo)
     // search directly by period id
     if (_period.length > 0) return _period[0]
     // search only by year
@@ -65,7 +65,7 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
   assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
   assert.equal(typeof periodo, 'object', '[senadores-asistencia]: El periodo general ingresada debe ser un objeto.')
 
-  let url = URL_ASISTENCIA_SALA_DETALLE.replace(/:periodo:/, periodo.id)
+  let url = URL_ASISTENCIA_SALA_DETALLE.replace(/:periodo:/, periodo.legislatura)
   url = url.replace(/:senador-id:/, senador.id)
 
   return scraperjs.StaticScraper.create()
@@ -98,7 +98,7 @@ function getAsistenciaSala (senador, periodo) {
   assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
   assert.equal(typeof periodo, 'object', '[senadores-asistencia]: El periodo general ingresada debe ser un objeto.')
 
-  const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo.id)
+  const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo.legislatura)
   // Get general data of attendance
   return scraperjs.StaticScraper.create()
     .get(url)
