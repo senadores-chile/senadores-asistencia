@@ -20,7 +20,7 @@ function getPeriodoSala (periodo) {
     if (_period.length > 0) return _period[0]
     // search only by year
     _period = periods.filter(period => {
-      return period.desde.year <= periodo && periodo <= period.hasta.year
+      return period.desde.getFullYear() <= periodo && periodo <= period.hasta.getFullYear()
     })[0]
     assert.ok(_period, '[senadores-asistencia]: Periodo de busqueda no encontrado')
     console.warn('[senadores-asistencia]: Solo se puede consultar por periodo legislativo. Si para un mismo año existe más de un periodo legislativo, solo se obtendran los resultados del primer periodo encontrado, por lo que jamas se obtendran los periodos posteriores en caso de existir. Prefiera busquedas por fecha o id de legislatura.')
@@ -54,7 +54,7 @@ function clMonthToMonth (clMonth) {
     Noviembre: 10,
     Diciembre: 11
   }
-  assert.ok(months[clMonth], `[senadores-asistencia]: No se puede convertir el mes ${clMonth}`)
+  assert.ok(months[clMonth] >= 0 && months[clMonth] < 12, `[senadores-asistencia]: No se puede convertir el mes ${clMonth}`)
   return months[clMonth]
 }
 
@@ -73,14 +73,13 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
     .scrape($ => {
       const detalle = $('table:last-child tr:not(:first-child)').map(function () {
         const str = $(this).find('td:last-child a').text()
-
-        const data = str.match(/(\d*) (\w*), [\s\S]* (\d*) de (\w*) de (\d*)/)
+        // console.log(str, periodo)
+        const data = str.match(/(\-{0,1}\d*) ([\s\S]*), [\s\S]* (\d*) de (\w*) de (\d*)/)
         const session = data[1]
         const tipo = data[2]
                       // año, mes, día
         const fecha = new Date(parseInt(data[5]), clMonthToMonth(data[4]), parseInt(data[3]))
         const asiste = $(this).find('td:first-child').has('img').length > 0
-        // console.log(session, tipo, fecha, asiste)
         return {
           session,
           tipo,
@@ -176,6 +175,14 @@ function getPeriodoComisiones (periodo) {
 
   if (typeof periodo === 'number') {
     assert.ok(periodo <= new Date().getFullYear(), '[senadores-asistencia]: No se puede consultar por un periodo en el futuro')
+    // if period < 2002 -> it is probably a legislature, so convert into a year for comissions
+    if (periodo < 2002) {
+      periodo = periods.filter(period => {
+        return period.legislatura === periodo
+      })[0].hasta.getFullYear()
+      console.warn('[senadores-asistencia]: Solo se puede consultar por año en consultas de comisiones. Si un id de legislatura sucede en más de un año, solo se considerará el primero encontrado.')
+    }
+    assert.ok(periodo, '[senadores-asistencia]: Periodo de busqueda no encontrado')
     return periodo
   }
   if (periodo instanceof Date) {

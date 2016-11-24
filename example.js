@@ -1,4 +1,4 @@
 const asistencia = require('./')
 
-asistencia()
-    .then(result => { console.log(result.length) })
+asistencia('Allamand', { periodo: 486 })
+    .then(result => { console.log(result) })

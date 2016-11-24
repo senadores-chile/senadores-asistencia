@@ -22,7 +22,7 @@ asistencia('Allamand')
         desde: Date(11/03/2016),
         hasta: Date(10/03/2017)
       },
-      asistencias: 56,
+      asistencia: 56,
       inasistencias: {
         justificadas: 0,
         injustificadas: 9,
