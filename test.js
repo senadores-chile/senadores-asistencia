@@ -13,7 +13,7 @@ test('default options', async t => {
 })
 
 test('custom options', async t => {
-  t.plan(14)
+  t.plan(30)
 
   // tests periodo option
   const resultByLegislatura = await senadoresAsistencia('Allamand', { periodo: 486 })
@@ -44,15 +44,30 @@ test('custom options', async t => {
   t.is(positiveSenators.length, 4)
 
   // test tipo option
-  // const allResults = await senadoresAsistencia('Allamand', { tipo: 'todas' })
-  // const roomResults = await senadoresAsistencia('Allamand', { tipo: 'sala' })
-  // const comisionResults = await senadoresAsistencia('Allamand', { tipo: 'comision' })
+  const allResults = await senadoresAsistencia('Allamand', { tipo: 'todas' })
+  t.true(allResults[0].hasOwnProperty('sala'))
+  t.true(allResults[0].hasOwnProperty('comisiones'))
 
-  t.pass()
-})
+  const _results = await senadoresAsistencia('Allamand')
+  const roomResults = await senadoresAsistencia('Allamand', { tipo: 'sala' })
+  t.deepEqual(roomResults[0], _results[0].sala)
 
-test('validations', t => {
-  t.plan(1)
+  const comisionResults = await senadoresAsistencia('Allamand', { tipo: 'comision' })
+  t.deepEqual(comisionResults[0], _results[0].comisiones)
 
-  t.pass()
+  // test combined options
+  const combined = await senadoresAsistencia({ partido: 'R.N.' }, { tipo: 'sala', periodo: 486, cantidadSenadores: -1 })
+  t.is(combined.length, 6)
+  t.is(combined[0].asistencia, 102)
+  t.is(combined[0].inasistencias.total, 5)
+  t.is(combined[1].asistencia, 99)
+  t.is(combined[1].inasistencias.total, 8)
+  t.is(combined[2].asistencia, 98)
+  t.is(combined[2].inasistencias.total, 9)
+  t.is(combined[3].asistencia, 106)
+  t.is(combined[3].inasistencias.total, 1)
+  t.is(combined[4].asistencia, 98)
+  t.is(combined[4].inasistencias.total, 9)
+  t.is(combined[5].asistencia, 107)
+  t.is(combined[5].inasistencias.total, 0)
 })
