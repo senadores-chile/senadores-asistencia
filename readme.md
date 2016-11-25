@@ -64,7 +64,20 @@ asistencia('Allamand')
 */
 ```
 
-## License
+## API
+
+### `asistencia([query] [, options])`
+
+El modulo expone una función que recibe dos parametros opcionales, un objeto `query` y un objeto `options`, y retorna un arreglo de estructura variable dependiendo de las opciones ingresadas.
+
+- `query`: El query corresponde al primer filtro que es aplicado para obtener el grupo de senadores. Las especificaciones de este objeto de busqueda son las mismas que las del modulo [`senadores-base`](https://github.com/YerkoPalma/senadores-base).
+- `options`: Las opciones de busqueda relativas a la asistencia, pueden ser las siguientes:
+  - `tipo`: Indica si se obtiene la asistencia a sesiones ordinarias de sala, a las comisiones de los senadores encontrados o ambas. Posibles valores: `'todas' 'sala' 'comision'`.  
+  - `periodo`: Indica el periodo de consulta, puede ser un entero (`number`) o una fecha (`date`). Es necesario señalar que el periodo no es tratado de la misma forma para la asistencia de sala que para la asistencia de comisiones. Para las comisiones el periodo corresponde a un año, es decir, un entero entre 2002 y 2016, si se ingresa una fecha, se obtiene el año de esta para la consulta por comisiones. 
+   Por otro lado, para las sesiones de sala, el periodo corresponde a un periodo de legislatura (revisa el arreglo [periods](/consts.js) para más detalle). Lo anterior implica que, si se ingresa en la opción periodo, un id de legislatura, la busqueda será la esperada en la asistencia a sala, pero en comisiones, se obtendra el año de la fecha limite de esa legislatura. A su vez, 
+  - `cantidadSenadores`
+
+## Licensia
 
 [MIT](/license)
 
