@@ -15,7 +15,8 @@ module.exports = function asistencia (query, options) {
   const defaultOptions = {
     periodo: new Date(),
     tipo: 'todas',
-    cantidadSenadores: 1
+    cantidadSenadores: 1,
+    incluyeSenador: false
   }
   options = Object.assign(defaultOptions, options)
 
@@ -28,12 +29,13 @@ module.exports = function asistencia (query, options) {
           () => getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
         ]
         return pAll(actions).then(result => {
+          if (options.incluyeSenador) return { senador, sala: result[0], comisiones: result[1] }
           return { sala: result[0], comisiones: result[1] }
         })
       case 'sala':
-        return getAsistenciaSala(senador, getPeriodoSala(options.periodo))
+        return getAsistenciaSala(senador, getPeriodoSala(options.periodo), options.incluyeSenador)
       case 'comision':
-        return getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo))
+        return getAsistenciaComisiones(senador, getPeriodoComisiones(options.periodo), options.incluyeSenador)
       default:
         throw new Error(`[senadores-asistencia]: Error - tipo de retorno '${options.tipo}' no conocido.`)
     }

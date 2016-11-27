@@ -13,7 +13,7 @@ test('default options', async t => {
 })
 
 test('custom options', async t => {
-  t.plan(30)
+  t.plan(37)
 
   // tests periodo option
   const resultByLegislatura = await senadoresAsistencia('Allamand', { periodo: 486 })
@@ -55,8 +55,12 @@ test('custom options', async t => {
   const comisionResults = await senadoresAsistencia('Allamand', { tipo: 'comision' })
   t.deepEqual(comisionResults[0], _results[0].comisiones)
 
+  // test incluyeSenador option
+  const includeResult = await senadoresAsistencia('Allamand', { incluyeSenador: true })
+  t.true(includeResult[0].hasOwnProperty('senador'))
+
   // test combined options
-  const combined = await senadoresAsistencia({ partido: 'R.N.' }, { tipo: 'sala', periodo: 486, cantidadSenadores: -1 })
+  const combined = await senadoresAsistencia({ partido: 'R.N.' }, { tipo: 'sala', periodo: 486, cantidadSenadores: -1, incluyeSenador: true })
   t.is(combined.length, 6)
   t.is(combined[0].asistencia, 102)
   t.is(combined[0].inasistencias.total, 5)
@@ -70,4 +74,10 @@ test('custom options', async t => {
   t.is(combined[4].inasistencias.total, 9)
   t.is(combined[5].asistencia, 107)
   t.is(combined[5].inasistencias.total, 0)
+  t.true(combined[0].hasOwnProperty('senador'))
+  t.true(combined[1].hasOwnProperty('senador'))
+  t.true(combined[2].hasOwnProperty('senador'))
+  t.true(combined[3].hasOwnProperty('senador'))
+  t.true(combined[4].hasOwnProperty('senador'))
+  t.true(combined[5].hasOwnProperty('senador'))
 })

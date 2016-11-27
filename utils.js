@@ -92,10 +92,11 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
 }
 
 // Get attendance for a single senator to regular room sessions
-// (obj, obj) -> obj
-function getAsistenciaSala (senador, periodo) {
+// (obj, obj, bool) -> obj
+function getAsistenciaSala (senador, periodo, incluyeSenador) {
   assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
   assert.equal(typeof periodo, 'object', '[senadores-asistencia]: El periodo general ingresada debe ser un objeto.')
+  assert.ok(typeof incluyeSenador === 'boolean' || typeof incluyeSenador === 'undefined', '[senadores-asistencia]: La opción \'incluye senador\' debe ser de tipo booleana.')
 
   const url = URL_ASISTENCIA_SALA.replace(/:periodo:/, periodo.legislatura)
   // Get general data of attendance
@@ -112,6 +113,20 @@ function getAsistenciaSala (senador, periodo) {
       const inasistenciasJustificadas = isNaN(parseInt(trSenador.find('td a[id]').text().trim()))
                                         ? 0
                                         : parseInt(trSenador.find('td a[id]').text().trim())
+      if (incluyeSenador) {
+        return {
+          senador,
+          periodo,
+          asistencia,
+          inasistencias: {
+            total: total - asistencia,
+            justificadas: inasistenciasJustificadas,
+            injustificadas: ((total - asistencia) - inasistenciasJustificadas) > 0
+                            ? (total - asistencia) - inasistenciasJustificadas
+                            : 0
+          }
+        }
+      }
       return {
         periodo,
         asistencia,
@@ -129,10 +144,11 @@ function getAsistenciaSala (senador, periodo) {
 }
 
 // Get attendance for a single senator to all of his commissions
-// (obj, num) -> arr
-function getAsistenciaComisiones (senador, periodo) {
+// (obj, num, bool) -> arr
+function getAsistenciaComisiones (senador, periodo, incluyeSenador) {
   assert.equal(typeof senador, 'object', '[senadores-asistencia]: El senador general ingresada debe ser un objeto.')
   assert.equal(typeof periodo, 'number', '[senadores-asistencia]: El periodo general ingresada debe ser un número.')
+  assert.ok(typeof incluyeSenador === 'boolean' || typeof incluyeSenador === 'undefined', '[senadores-asistencia]: La opción \'incluye senador\' debe ser de tipo booleana.')
 
   let url = URL_ASISTENCIA_COMISIONES.replace(/:periodo:/, periodo)
   url = url.replace(/:senador-id:/, senador.id)
@@ -160,6 +176,14 @@ function getAsistenciaComisiones (senador, periodo) {
           asistente
         }
       }).get()
+      if (incluyeSenador) {
+        return {
+          senador,
+          periodo,
+          oficiales,
+          otras
+        }
+      }
       return {
         periodo,
         oficiales,
