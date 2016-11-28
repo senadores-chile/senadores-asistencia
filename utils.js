@@ -75,13 +75,13 @@ function getDetalleAsistenciaSala (asistenciaGeneral, senador, periodo) {
         const str = $(this).find('td:last-child a').text()
         // console.log(str, periodo)
         const data = str.match(/(-{0,1}\d*) ([\s\S]*), [\s\S]* (\d*) de (\w*) de (\d*)/)
-        const session = data[1]
+        const sesion = data[1]
         const tipo = data[2]
                       // año, mes, día
         const fecha = new Date(parseInt(data[5]), clMonthToMonth(data[4]), parseInt(data[3]))
         const asiste = $(this).find('td:first-child').has('img').length > 0
         return {
-          session,
+          sesion,
           tipo,
           fecha,
           asiste
