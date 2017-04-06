@@ -9,7 +9,7 @@ test('default options', async t => {
   t.true(result[0].hasOwnProperty('sala'))
   t.true(result[0].hasOwnProperty('comisiones'))
   t.is(result[0].sala.periodo.legislatura, 487)
-  t.is(result[0].comisiones.periodo, 2016)
+  t.is(result[0].comisiones.periodo, 2017)
 })
 
 test('custom options', async t => {

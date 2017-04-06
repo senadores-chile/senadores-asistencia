@@ -10,7 +10,7 @@
     "utils.js"
   ],
   "scripts": {
-    "test": "standard --verbose | snazzy && ava"
+    "test": "standard --verbose | snazzy && ava --verbose"
   },
   "repository": "YerkoPalma/senadores-asistencia",
   "keywords": [],
