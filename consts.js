@@ -103,6 +103,11 @@ const periods = [
     legislatura: 487,
     desde: new Date(2016, 3, 11),
     hasta: new Date(2017, 3, 10)
+  },
+  { // 11/03/2016 - 10/03/2017
+    legislatura: 488,
+    desde: new Date(2017, 3, 11),
+    hasta: new Date(2018, 3, 10)
   }
 ]
 
