@@ -2,7 +2,7 @@
   "name": "senadores-asistencia",
   "description": "Observador de la asistencia de senadores tanto a sesiones de sala como a comisiones del senado de Chile",
   "author": "YerkoPalma",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "main": "index.js",
   "files": [
     "index.js",
