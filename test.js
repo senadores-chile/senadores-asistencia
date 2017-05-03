@@ -3,7 +3,7 @@ const senadoresAsistencia = require('./')
 
 test('default options', t => {
   return senadoresAsistencia().then(result => {
-    t.is(result.length, 1)
+    t.is(result.length, 38)
     t.true(result[0].hasOwnProperty('sala'))
     t.true(result[0].hasOwnProperty('comisiones'))
     t.is(result[0].sala.periodo.legislatura, 488)
