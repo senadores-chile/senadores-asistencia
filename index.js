@@ -15,7 +15,7 @@ module.exports = function asistencia (query, options) {
   const defaultOptions = {
     periodo: new Date(),
     tipo: 'todas',
-    cantidadSenadores: 1,
+    cantidadSenadores: -1,
     incluyeSenador: false
   }
   options = Object.assign(defaultOptions, options)
